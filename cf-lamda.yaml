@@ -1,0 +1,28 @@
+Resources:
+  OpsgenieLamdaFunc:
+    Type: AWS::Lambda::Function
+    Properties :
+      Description: "It takes care if user deleteion from opsgeine"
+      Environment:
+         Variables:
+           ACCESS_TOKEN: 're-opsgeine-access-key'
+      Handler: usrmgmt-opsgenie.lambda_handler
+      Code: 
+         S3Bucket: batai.s3.bucket
+         S3Key: function.zip
+      Timeout: 60
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: "python3.6"
+      MemorySize: 128
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal: {Service: [lambda.amazonaws.com]}
+          Action: ['sts:AssumeRole']
+      Path: /
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole

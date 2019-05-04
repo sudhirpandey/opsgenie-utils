@@ -1,0 +1,5 @@
+Resources:
+  OpsgeineCode:
+    Type: AWS::S3::Bucket
+    Properties:
+       BucketName: democode.s3.bucket
