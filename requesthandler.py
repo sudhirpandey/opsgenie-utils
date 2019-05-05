@@ -32,6 +32,17 @@ def requestWrapper(func, **kwargs):
     return response
 
 
+def response(message, status_code):
+    return {
+        'statusCode': str(status_code),
+        'body': json.dumps(message),
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+            },
+        }
+
+
 def getResource(endpoint,params={}):
     response=requestWrapper(requests.get,endpoint=endpoint,params=params)
     return response
