@@ -3,7 +3,7 @@ import requesthandler
 
 #remove user from the schedule rotation
 def removeUserFromScheduleRotation(schedule_name,rotation_id,user_name,rotation):
-    print("User "+ user_name+" found at "+schedule_name+" on Rotation "+ rotation['name'])
+    print("Removing user "+ user_name+" from "+schedule_name+" on Rotation "+ rotation['name'])
     post_data={}
     endpoint="/v2/schedules/"+schedule_name+"/rotations/"+rotation_id
     params={"scheduleIdentifierType": "name"}
@@ -16,7 +16,7 @@ def removeUserFromScheduleRotation(schedule_name,rotation_id,user_name,rotation)
 
     #if the final result of new list is zero then user that was to be deleted seems to be the only one in rotation, which does not allow us to patch rotation object.
     if len(post_data['participants']) == 0:
-       message = "User "+ user_name+" on "+schedule_name+" on Rotation "+ rotation['name'] +"could not be removed as rotation needs at least one member"
+       message = "User "+ user_name+" on "+schedule_name+" on Rotation "+ rotation['name'] +" could not be removed as rotation needs at least one member"
        print(message)
        return (False, message)
 

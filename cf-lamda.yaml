@@ -5,10 +5,10 @@ Resources:
       Description: "It takes care if user deleteion from opsgeine"
       Environment:
          Variables:
-           ACCESS_TOKEN: 're-opsgeine-access-key'
+             ACCESS_TOKEN: 'xxx-xxx-xxx'
       Handler: usrmgmt-opsgenie.lambda_handler
       Code: 
-         S3Bucket: batai.s3.bucket
+         S3Bucket: democode.s3.bucket
          S3Key: function.zip
       Timeout: 60
       Role: !GetAtt LambdaExecutionRole.Arn

@@ -19,7 +19,6 @@ def checkMembership(team_name,username):
     response=requesthandler.getResource(endpoint,params)
 
     #json struct doc on https://docs.opsgenie.com/docs/team-api#section-get-team
-    #print(json.dumps(teamMembers.json(), indent=4, separators=(',', ': ')))
     teamMembers=response.json()
     if "members" in teamMembers['data']:
         for item in teamMembers['data']['members']:
@@ -34,10 +33,13 @@ def removeUserFromTeam(team_name, user_name):
     params={'teamIdentifierType': 'name'}
     response=requesthandler.deleteResource(endpoint,params)
     if response.status_code == 200:
-        print("User "+user_name+"deleted from team "+ team_name)
-        return True
+        message = "User "+user_name+" deleted from team "+ team_name
+        print(message)
+        return (True,message)
     else:
-        return False
+        print(json.dumps(response.json(), indent=4, separators=(',', ': ')))
+        message = "User could "+ user_name +"not be removed from team "+team_name+", check Logs for details"
+        return (False,message)
 
 
 
@@ -46,6 +48,7 @@ def checkAndRemoveUserFromTeam(user_name):
     teams=getTeams()
     for team_name in teams:
         if checkMembership(team_name,user_name):
-            if not removeUserFromTeam(team_name,user_name):
-                return False
-    return True
+            success, message = removeUserFromTeam(team_name,user_name)
+            if not success:
+                return (False, message)
+    return (True,"User removed from all the teams")
