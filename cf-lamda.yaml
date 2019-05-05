@@ -1,4 +1,8 @@
 Resources:
+  LambdaVersion1:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref OpsgenieLamdaFunc
   OpsgenieLamdaFunc:
     Type: AWS::Lambda::Function
     Properties :
@@ -6,6 +10,7 @@ Resources:
       Environment:
          Variables:
              ACCESS_TOKEN: 'xxx-xxx-xxx'
+             VERSION: 'vvv'
       Handler: usrmgmt-opsgenie.lambda_handler
       Code: 
          S3Bucket: democode.s3.bucket
