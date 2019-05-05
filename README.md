@@ -2,19 +2,18 @@
 This solution is designed to run as lamda function that gets triggred via API gateway.
 
 ### Usage
-The lamda function gets triggered and does deletion of User if possible from Opsgenine. The endpont of OpenApi gate way accepts POST method and expect a json payload
+The lamda function gets triggered and does deletion of User if possible from Opsgeine. The endpont of API gateway accepts POST method and expect a json payload
 
 ```
 curl -H x-api-key:xxx-xxx-xxx -XPOST https://iikbcte807.execute-api.eu-north-1.amazonaws.com/test -d '{ "username":"hari@example.com" }'
 ```
 
 ### API gateway
-The API enpoint is for now protected via api-key. so that its not open for public to make request, this will give some kind of of protection, so that our api end point would not be misused,and helps to hahave Lamda executed only by request which provides api-key as header.The API gate way end point also has rate limitation. For now this API gateway is provisoned using AWS console. 
+The API enpoint is configured to  need api-key (For now) in order to be accessible. This will give some kind of of protection as our api end point would not be misused, and helps to have Lamda executed only by request which provides api-key as header.The API gateway end point also has rate limitation. For now this API gateway is provisoned using AWS console. 
 
 
 ### Lamda function
-The Lamda function is to be executed is divided up into multiple files, and also depends on `requests` library that is not provided ootb in amazon. Hence the approach of creating a deployment Package was
-take , where all the code and need dependency is zipped up and uploaded into s3 bucket. The lamda function will then be using this uploaded zip file from s3 as its code.
+The Lamda code  be executed is divided up into multiple files, and also depends on `requests` library that is not provided out of the box  within  amazon. Hence the approach of creating a deployment Package was taken , where all the code and need dependency is zipped up and uploaded into s3 bucket. The lamda function will then be using this uploaded zip file from s3 as its code.
 
 * #### Building the package.
   The followed doc was https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html.
@@ -40,7 +39,7 @@ take , where all the code and need dependency is zipped up and uploaded into s3 
   aws s3 cp function.zip s3://democode.s3.bucket
   ```
   
-  Now that the code is in s3 bucket we can create the lamda function using the cf-templated
+  Now that the code is in s3 bucket we can create the lamda function using the cf-lamda.yaml. One thing to notice is cf-lamda.yaml has environment variable `ACCESS_TOKEN`, whose value need to be token obt  ained from opsgeine. Once substitited withe the right token value following aws cli can be executed to deploy the lamda function. 
   ```
   #create stack
   aws cloudformation create-stack --stack-name lamda-test --template-body file://cf-lamda.yaml --capabilities CAPABILITY_IAM
