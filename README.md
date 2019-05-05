@@ -48,3 +48,7 @@ The Lamda code  be executed is divided up into multiple files, and also depends 
   aws cloudformation create-stack --stack-name lamda-test --template-body file://cf-lamda.yaml --capabilities CAPABILITY_IAM
 
   ```
+
+# Release Process for development
+It was found that once the zip file with updated code was uploaded into s3, lamda deployment was still not updated. Hence we need to create another deployment version it starts to use new code, Hence `releash.sh` can be used to automate the deployment of new code into this setup. With each release launch ,it updates the version of deployment by 1.
+
