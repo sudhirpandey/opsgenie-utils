@@ -13,42 +13,18 @@ The API enpoint is configured to  need api-key (For now) in order to be accessib
 
 
 ### Lamda function
-The Lamda code  be executed is divided up into multiple files, and also depends on `requests` library that is not provided out of the box  within  amazon. Hence the approach of creating a deployment Package was taken , where all the code and need dependency is zipped up and uploaded into s3 bucket. The lamda function will then be using this uploaded zip file from s3 as its code.
+The Lamda code  be executed is divided up into multiple files, and also depends on `requests` library that is not provided out of the box  within  amazon. Hence we imported the requests library provided from the boto library. Thus we can only now concentrate on our to be provided as zip file. In this solution we use cloudformation native way of building the package and deploying the lamda with latest code
 
-* #### Building the package.
-  The followed doc was https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html.
+* #### Building the package and uploading the package.
   ```
-  #Create the zip file with dependcies
-  cd /home/vagrant/Python3/lib64/python3.4/site-packages/
-  zip -r9 ../../../../function.zip .
+  aws cloudformation package --template-file cf-lamda.yaml --s3-bucket cf-templates-1ly7p8skrsncw-eu-north-1 --output-template-file template.packaged.yml
 
-  #Move the generated function.zip to folder where source code exist and add your python files
-  git clone git@github.com:sudhirpandey/opsgenie-utils.git
-  mv function-zip opsgenie-utils
-  find . -name '*.py' -exec basename {} \; |xargs zip -g function.zip  
+  #The bucket name can be any bucket where the latest cold is now updated.
   ```
 * #### Deploying the lamda function.
-  We have two cloudformation templates that would help us to create the desired resource in AWS.
-  First we need to create the s3 bucket where the `function.zip` obtained form above would be uploaded.
-  ```
-  aws cloudformation create-stack --stack-name myteststack --template-body file://cf-bucket.yaml
-  ```
-
-  Now we need to upload the file to bucket 
-  ```
-  aws s3 cp function.zip s3://democode.s3.bucket
-  ```
-  
-  Now that the code is in s3 bucket we can create the lamda function using the cf-lamda.yaml. One thing to notice is cf-lamda.yaml has environment variable `ACCESS_TOKEN`, whose value need to be token obt  ained from opsgeine. Once substitited withe the right token value following aws cli can be executed to deploy the lamda function. 
-  ```
-  #create stack
-  aws cloudformation create-stack --stack-name lamda-test --template-body file://cf-lamda.yaml --capabilities CAPABILITY_IAM
-
-  #Some time we need to update the stack when the new code is uploaded in the s3 bucket
-  aws cloudformation create-stack --stack-name lamda-test --template-body file://cf-lamda.yaml --capabilities CAPABILITY_IAM
+  Now we use the generated template from the above command to do actual deployment (ie create or update the lamda stack). Here we pass on the Token as argument which will be available to lamda function as  environment variable
 
   ```
+  aws cloudformation deploy --template-file /home/vagrant/Devops/template.packaged.yml --stack-name cfdeploy --parameter-overrides Token=fef1e44b-c80c-xxx-xxxxxxxxxx --capabilities CAPABILITY_IAM 
 
-# Release Process for development
-It was found that once the zip file with updated code was uploaded into s3, lamda deployment was still not updated. Hence we need to create another deployment version it starts to use new code, Hence `releash.sh` can be used to automate the deployment of new code into this setup. With each release launch ,it updates the version of deployment by 1.
-
+  ```
