@@ -1,20 +1,18 @@
+Parameters:
+  Token:
+    Description: "Token to be passed as environment variable"
+    Type: String
+    Default: "xxx"
 Resources:
-  LambdaVersion1:
-    Type: AWS::Lambda::Version
-    Properties:
-      FunctionName: !Ref OpsgenieLamdaFunc
   OpsgenieLamdaFunc:
     Type: AWS::Lambda::Function
     Properties :
       Description: "It takes care if user deleteion from opsgeine"
       Environment:
          Variables:
-             ACCESS_TOKEN: 'xxx-xxx-xxx'
-             VERSION: 'vvv'
+             ACCESS_TOKEN: !Ref Token
       Handler: usrmgmt-opsgenie.lambda_handler
-      Code: 
-         S3Bucket: democode.s3.bucket
-         S3Key: function.zip
+      Code: code/
       Timeout: 60
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: "python3.6"
